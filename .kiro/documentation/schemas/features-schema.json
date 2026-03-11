@@ -1,0 +1,41 @@
+{
+  "features": {
+    [other features],
+    "ml-medgemma-finetuning-00001": {
+      "id": "ml-medgemma-finetuning-00001",
+      "name": "MedGemma 27B QLoRA Fine-tuning",
+      "version": "v00",
+      "moscow": "Must-have",
+      "description": "WHEN synthetic training data is available, THE system SHALL fine-tune MedGemma 27B for literacy profiling using QLoRA on RunPod 2x A40 96GB SO THAT specialized literacy assessment is achieved",
+      "dependencies": [
+        "data-synthetic-generation-00001",
+        "ml-medgemma-setup-00001"
+      ],
+      "tasks": [
+        {
+          "id": "qlora-setup",
+          "name": "Setup QLoRA configuration",
+          "moscow": "Must-have"
+        },
+        {
+          "id": "training-pipeline",
+          "name": "Implement training pipeline",
+          "moscow": "Must-have"
+        },
+        {
+          "id": "model-validation",
+          "name": "Validate fine-tuned model",
+          "moscow": "Must-have"
+        }
+      ],
+      "status": "completed",
+      "created_date": null,
+      "completed_date": "2026-02-18T00:00:00Z",
+      "testable_outcome": "Fine-tuned MedGemma model achieves >85% literacy classification accuracy",
+      "design_source": "design_doc_10",
+      "started_date": "2026-02-16T00:00:00Z",
+      "planned_date": null
+    },
+    [other features]
+  }
+}
