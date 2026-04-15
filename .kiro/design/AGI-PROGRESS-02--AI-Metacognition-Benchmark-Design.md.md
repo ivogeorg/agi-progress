@@ -88,7 +88,7 @@ The benchmark uses a hybrid organization. Because Run 2 requires decoys, Run 1 m
 
 #### Response Normalization
 
-Do not enforce word limits. Word limits artificially truncate Chain-of-Thought (CoT) reasoning, which is critical for the emergence of cached internal confidence representations. Normalization is handled inherently by the Judge LLM, which evaluates semantic validity regardless of response length.
+Do not enforce word limits. Word limits artificially truncate **Chain-of-Thought (CoT)** reasoning, which is critical for the emergence of cached internal confidence representations. Normalization is handled inherently by the Judge LLM, which evaluates semantic validity regardless of response length.
 
 #### Run 1 Response Evaluation for Run 2 Decoys
 
@@ -183,7 +183,7 @@ def esma_step(parent_model, held_out_batch, noise_std=0.01, population_size=10):
 ```
 ### Small Model: Gemma 4 3-5B
 
-Released on April 2, 2026, Google's **Gemma 4* family features models perfectly suited for SLM metacognitive optimization. Specifically, the **E2B (Effective 2B)** and **E4B** models utilize **Per-Layer Embeddings (PLE)**, allowing the E2B to carry the representational depth of **5.1B parameters** while operating highly efficiently. Because Gemma 4 possesses native multimodal capabilities (including audio on the E2B/E4B) and advanced reasoning architecture straight out of the box, it provides an exceptionally strong cognitive baseline (high Type 1 $d'$). Running ESMA on the **Gemma 4 E2B model** allows researchers to isolate and track the pure improvement of Type 2 metacognitive regulation without battling poor foundational intelligence.
+Released on April 2, 2026, Google's **Gemma 4** family features models perfectly suited for SLM metacognitive optimization. Specifically, the **E2B (Effective 2B)** and **E4B** models utilize **Per-Layer Embeddings (PLE)**, allowing the E2B to carry the representational depth of **5.1B parameters** while operating highly efficiently. Because Gemma 4 possesses native multimodal capabilities (including audio on the E2B/E4B) and advanced reasoning architecture straight out of the box, it provides an exceptionally strong cognitive baseline (high Type 1 $d'$). Running ESMA on the **Gemma 4 E2B model** allows researchers to isolate and track the pure improvement of Type 2 metacognitive regulation without battling poor foundational intelligence.
 
 ### MetaMind
 
