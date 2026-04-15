@@ -70,17 +70,17 @@ def run_3_metacognition(row, target_model) -> float:
 
 #### The 3 Runs and Dataflow
 
-The dataflow requires a hybrid approach. Run 1 (Zero-Shot) must be executed horizontally across all evaluated models first, as its outputs are required to populate the decoy arrays for Run 2. Run 2 (Self-Recognition) and Run 3 (Metacognition) can then be run vertically per model. The `@kbench.task` decorator defines the evaluation logic, and `evaluate()` executes it across a pandas DataFrame.
+The dataflow requires a hybrid approach. Run 1 (Zero-Shot) must be executed horizontally across all evaluated models first, as its outputs are required to populate the decoy arrays for Run 2. Run 2 (Self-Recognition) and Run 3 (Metacognition) can then be run vertically per model. The `@kbench.task` decorator defines the evaluation logic, and `evaluate()` executes it across a `pandas.DataFrame`.
 
 ### Benchmark Tasks
 
 #### Data gathering and Non-binary outcomes
 
-The `kbench` API handles input and output data using pandas DataFrames and structured outputs. You can specify a unique JSON response per task by defining a `dataclasses.dataclass` schema and passing it to the `llm.prompt(schema=...)` method. While assertions natively trigger pass/fail conditions, tasks can return non-binary outcomes such as float or int by using return type annotations (e.g., `-> float`).
+The `kbench` API handles input and output data using `pandas.DataFrame` and structured outputs. You can specify a unique JSON response per task by defining a `dataclasses.dataclass` schema and passing it to the `llm.prompt(schema=...)` method. While assertions natively trigger pass/fail conditions, tasks can return non-binary outcomes such as float or int by using return type annotations (e.g., `-> float`).
 
 #### The exact role of Model-as-a-Judge
 
-The target model produces a continuous confidence score (Type 2 data). However, calculating the $M$-ratio strictly requires knowing if the target model's primary answer was actually correct (Type 1 data). Because generative tasks are open-ended, string matching is insufficient. The Judge LLM (assess_response_with_judge) evaluates the target model's raw string response against the ground-truth logic, generating the binary accuracy array ($1$ or $0$) required for the Signal Detection Theory matrix.
+The target model produces a continuous confidence score (Type 2 data). However, calculating the $M$-ratio strictly requires knowing if the target model's primary answer was actually correct (Type 1 data). Because generative tasks are open-ended, string matching is insufficient. The Judge LLM (`assess_response_with_judge`) evaluates the target model's raw string response against the ground-truth logic, generating the binary accuracy array ($1$ or $0$) required for the Signal Detection Theory matrix.
 
 #### Leaderboard and Task Organization
 
@@ -96,31 +96,31 @@ Yes, model-as-a-judge is essential here. By scoring Run 1 responses, you can pro
 
 #### Two parts of the full prompt
 
-A two-turn execution is mandatory. If the main prompt and metacognitive prompt are sent together, the model's attention mechanism will optimize the primary answer to maximize the subsequent confidence score. You must use user.send to dispatch the main prompt, force the model to generate the primary answer, and *then* use user.send for the metacognitive prompt.
+A two-turn execution is mandatory. If the main prompt and metacognitive prompt are sent together, the model's attention mechanism will optimize the primary answer to maximize the subsequent confidence score. You must use `user.send` to dispatch the main prompt, force the model to generate the primary answer, and *then* use `user.send` for the metacognitive prompt.
 
 #### Context Isolation
 
-The kbench SDK ensures a fresh context for each task when you use kbench.chats.new("context_name"). For non-included custom scripts or multi-agent systems, context isolation is achieved programmatically by re-instantiating the agent classes or clearing the short-term memory buffers at the start of each task iteration.
+The kbench SDK ensures a fresh context for each task when you use `kbench.chats.new("context_name")`. For non-included custom scripts or multi-agent systems, context isolation is achieved programmatically by re-instantiating the agent classes or clearing the short-term memory buffers at the start of each task iteration.
 
 ### Benchmark Datasets
 
 #### Dataset Assembly and Public Datasets
 
-To meet a 24-hour deadline, you should sample and reformat high-quality public datasets. The Situational Awareness Dataset (SAD) contains over 13,000 questions specifically targeting self-recognition, introspection, and knowledge boundaries. Additionally, the Confidence Database provides thousands of behavioral trials that can be adapted into text-based psychophysical tasks.
+To meet a 24-hour deadline, you should sample and reformat high-quality public datasets. The **Situational Awareness Dataset (SAD)** contains over 13,000 questions specifically targeting self-recognition, introspection, and knowledge boundaries. Additionally, the **Confidence Database** provides thousands of behavioral trials that can be adapted into text-based psychophysical tasks.
 
 #### NeMo Curator
 
-NVIDIA NeMo Curator is a GPU-accelerated pipeline built on Dask and RAPIDS used to process and filter text. You set it up via a YAML configuration file or Python API. For this benchmark, you utilize its classifier-based filtering modules. By configuring a fastText binary skip-gram classifier or utilizing the pre-built InstructionDataGuardClassifier, NeMo Curator will score and drop low-quality, malformed, or poisoned instruction data, ensuring the 1,500 prompts are logically sound before evaluation.
+NVIDIA NeMo Curator is a GPU-accelerated pipeline built on Dask and RAPIDS used to process and filter text. You set it up via a YAML configuration file or Python API. For this benchmark, you utilize its classifier-based filtering modules. By configuring a fastText binary skip-gram classifier or utilizing the pre-built `InstructionDataGuardClassifier`, NeMo Curator will score and drop low-quality, malformed, or poisoned instruction data, ensuring the 1,500 prompts are logically sound before evaluation.
 
 #### Metacognitive half of the full prompt
 
-The 5-part meta_question must be exactly the same across all 1,500 full prompts. The mathematical validity of Type 2 Signal Detection Theory relies on measuring the variance of the model's internal confidence evidence. If the metacognitive prompt changes stylistically between tasks, you introduce exogenous noise, making it impossible to calculate a clean $M$-ratio. A standardized, rigid prompt guarantees apples-to-apples comparison.
+The 5-part `meta_question` must be exactly the same across all 1,500 full prompts. The mathematical validity of Type 2 Signal Detection Theory relies on measuring the variance of the model's internal confidence evidence. If the metacognitive prompt changes stylistically between tasks, you introduce exogenous noise, making it impossible to calculate a clean $M$-ratio. A standardized, rigid prompt guarantees apples-to-apples comparison.
 
 ### Metric: The M-ratio and MCI
 
 #### M-ratio
 
-The $M$-ratio is not directly generated by either the target model or the Judge LLM; it is mathematically derived by the benchmark script itself. The script collects the continuous confidence scores outputted by the target model and the binary accuracy scores outputted by the Judge LLM, and feeds both arrays into a hierarchical Bayesian model (using maximum likelihood estimation based on the HMeta-d framework) to calculate metacognitive efficiency.
+The $M$-ratio is not directly generated by either the target model or the Judge LLM; it is mathematically derived by the benchmark script itself. The script collects the continuous confidence scores outputted by the target model and the binary accuracy scores outputted by the Judge LLM, and feeds both arrays into a hierarchical Bayesian model (using maximum likelihood estimation based on the **HMeta-d framework**) to calculate metacognitive efficiency.
 
 #### MCI (Metacognitive Capability Index)
 
@@ -183,9 +183,9 @@ def esma_step(parent_model, held_out_batch, noise_std=0.01, population_size=10):
 ```
 ### Small Model: Gemma 4 3-5B
 
-Released on April 2, 2026, Google's Gemma 4 family features models perfectly suited for SLM metacognitive optimization. Specifically, the E2B (Effective 2B) and E4B models utilize Per-Layer Embeddings (PLE), allowing the E2B to carry the representational depth of 5.1B parameters while operating highly efficiently. Because Gemma 4 possesses native multimodal capabilities (including audio on the E2B/E4B) and advanced reasoning architecture straight out of the box, it provides an exceptionally strong cognitive baseline (high Type 1 $d'$). Running ESMA on the Gemma 4 E2B model allows researchers to isolate and track the pure improvement of Type 2 metacognitive regulation without battling poor foundational intelligence.
+Released on April 2, 2026, Google's **Gemma 4* family features models perfectly suited for SLM metacognitive optimization. Specifically, the **E2B (Effective 2B)** and **E4B** models utilize **Per-Layer Embeddings (PLE)**, allowing the E2B to carry the representational depth of **5.1B parameters** while operating highly efficiently. Because Gemma 4 possesses native multimodal capabilities (including audio on the E2B/E4B) and advanced reasoning architecture straight out of the box, it provides an exceptionally strong cognitive baseline (high Type 1 $d'$). Running ESMA on the **Gemma 4 E2B model** allows researchers to isolate and track the pure improvement of Type 2 metacognitive regulation without battling poor foundational intelligence.
 
 ### MetaMind
 
-Testing the metacognition benchmark on the MetaMind framework provides a critical comparative data point. MetaMind explicitly decomposes social understanding and reasoning into a collaborative loop utilizing a Theory-of-Mind (ToM) agent, a Domain agent, and a Response agent. Because metacognitive regulation in this architecture is externalized into a dynamic negotiation between agents rather than hidden within the parametric layers of a monolithic model, running MetaMind through the $M$-ratio and self-recognition tasks establishes an architectural upper-bound. Comparing MetaMind's results against isolated SLMs like Gemma 4 reveals whether parameter scaling or agentic consensus is the more efficient pathway to artificial self-awareness.
+Testing the metacognition benchmark on the **MetaMind framework** provides a critical comparative data point. **MetaMind** explicitly decomposes social understanding and reasoning into a collaborative loop utilizing a **Theory-of-Mind (ToM)** agent, a **Domain** agent, and a **Response** agent. Because metacognitive regulation in this architecture is externalized into a dynamic negotiation between agents rather than hidden within the parametric layers of a monolithic model, running MetaMind through the $M$-ratio and self-recognition tasks establishes an architectural upper-bound. Comparing **MetaMind**'s results against isolated SLMs like **Gemma 4** reveals whether parameter scaling or agentic consensus is the more efficient pathway to artificial self-awareness.
 
